@@ -8,6 +8,8 @@ TagManager:
   - OB
   - Brick
   - PowerUp
+  - Ball
+  - End
   layers:
   - Default
   - TransparentFX
