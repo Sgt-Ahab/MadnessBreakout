@@ -6,6 +6,7 @@ using UnityEngine;
 
 //My thought is to make this the state manager, check what block the ball hits, update score, hierarchy the blocks,
 //Possibly even make the random layouts be from here? Or make that a parent and a block layout
+//Make an algorithm that takes a space, and occupies it space, make prefabs to infer for usage?
 public class GameStateManager : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created

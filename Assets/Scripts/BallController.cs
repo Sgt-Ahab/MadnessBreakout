@@ -65,7 +65,7 @@ public class BallController : MonoBehaviour
                     ballSpeed = 3;
                 }
         }
-    }    
+    }
     //PreBuilts
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -77,11 +77,24 @@ public class BallController : MonoBehaviour
                 this.gameObject.transform.position = spawnPoint;
                 rb.bodyType = RigidbodyType2D.Static;
                 isBallDrop = false;
+                ballSpeed = 3;
             }
         }
+        //Paddle Logic
         else if(collision.gameObject.CompareTag("Paddle"))
         {
             incrementSpeed();
+            //Gather what the paddle data size is
+            float paddleCenter = collision.transform.position.x;
+            //Use its collider for full width
+            float paddleWidth = collision.collider.bounds.size.x;
+            //Calculate the X value for offset
+            float offset = (this.gameObject.transform.position.x - collision.transform.position.x) / (paddleWidth / 2);
+            //Assemble the newAngle for balls redirection
+            Vector2 newAngle = new Vector2(offset, 1.0f).normalized;
+            //Normalize the data with .normalized    
+            //New Velocity is our Vector2 * ballSpeed
+            rb.linearVelocity = newAngle * ballSpeed;
         }
     }
 }
