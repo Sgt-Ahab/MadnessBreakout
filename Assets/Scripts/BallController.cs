@@ -13,6 +13,7 @@ public class BallController : MonoBehaviour
     private float maxBallSpeed = 12;
     private Vector2 velocity;
     public bool ballEnabled = true;
+    public bool isClone = false;
     //Store the Ball of reference for recalling/recreating
     public GameObject ball;
     //Spawn Location
@@ -72,12 +73,17 @@ public class BallController : MonoBehaviour
         if(collision.gameObject.CompareTag("End"))
         {
             //the GameManager can keep count of balls, and if balls are 0, deduct a life
-            if(ballEnabled)
+            if(ballEnabled && isClone)
+            {
+                Destroy(this.gameObject);
+            }
+            else
             {
                 this.gameObject.transform.position = spawnPoint;
                 rb.bodyType = RigidbodyType2D.Static;
                 isBallDrop = false;
                 ballSpeed = 3;
+                //Reduce a life as well
             }
         }
         //Paddle Logic
