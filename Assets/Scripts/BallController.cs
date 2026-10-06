@@ -45,7 +45,7 @@ public class BallController : MonoBehaviour
         //Every contact WITH PADDLE (place on collision) increments + 1
         if(ballSpeed < maxBallSpeed)
         {
-            ballSpeed = ballSpeed + 0.5F;
+            ballSpeed = ballSpeed + 0.25F;
         }
         else
         {

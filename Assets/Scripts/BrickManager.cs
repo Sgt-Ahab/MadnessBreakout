@@ -10,6 +10,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph.Internal;
 
 public class BrickManager : MonoBehaviour
 {
@@ -78,12 +79,7 @@ public class BrickManager : MonoBehaviour
     void Start()
     {
         SpawnBricks();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        InitializeAllBricks();
     }
     //Helpers
     private void PopulateLayer1()
@@ -114,25 +110,46 @@ public class BrickManager : MonoBehaviour
 
         } 
     }
+    private void PopulateLayer2()
+    {
+        //This gathers the grid size of the two points topLeft, bottomRight with the brick size + padding
+        //To allow the bricks to be comfortably placed.
+        //Begin Layer 2
+        //Layer 2 is where remaining base bricks go, start with grid size float points
+        float totalWidth = bottomRight.position.x - topLeft.position.x;
+        float totalHeight = topLeft.position.y - bottomRight.position.y;
+
+        //Get each Brick step size (Brick Size)
+        float stepX = brickSize.x + brickPadding.x;
+        float stepY = brickSize.y + brickPadding.y;
+
+        //Count rows and cols for Layer 2 Brick PlaceMent
+        //We want floor to round-down how many xSteps (Columns) we can place
+        float xSteps = Mathf.FloorToInt(totalWidth / stepX);
+        float ySteps = Mathf.FloorToInt(totalHeight / stepY);
+
+        //$ is for String interpolation
+        //Debug.Log($"xSteps: {xSteps}; ySteps: {ySteps}");
+        //Nested loop to get x + y, starting from upperLeft
+        for(int c = 0; c < xSteps; c++)
+        {
+            for(int r = 0; r < ySteps; r++)
+            {
+                //Gather our positions, and instatiate the block, shifting up/down to stay inbound
+                float posX = topLeft.position.x + (c * stepX) + (brickSize.x / 2f);
+                float posY = topLeft.position.y - (r * stepY) - (brickSize.y / 2f);
+
+                Vector2 spawnPoint = new Vector2(posX, posY);
+                Instantiate(baseBrick, spawnPoint, Quaternion.identity, transform);
+                totalBlockCount++;
+            }
+        }
+    }
     private void SpawnBricks()
     {
         //Fill Layer 1. then Layer 2
         PopulateLayer1();
-
-        //Begin Layer 2
-        //Layer 2 is where remaining base bricks go, start with grid size float points + the brick size
-        float xMin = topLeft.position.x + (brickSize.x / 2f);
-        float xMax = bottomRight.position.x - (brickSize.x / 2f);
-        float yMax = topLeft.position.y;
-        float yMin = bottomRight.position.y;
-
-        float yMid = yMax - ((yMax - yMin) / 2f);
-        //CLOCK-IN POINT: FINISH THE LAYER TWO SO THE GRID SHOWS,
-        //Get random cluster prefab from array
-        int randomIndex = Random.Range(0, brickBlockObjects.Length);
-        GameObject randomFab = brickBlockObjects[randomIndex];
-
-        //Calculate spawn positions
+        PopulateLayer2();
     }
     private void ListRepopulation()
     {
@@ -153,6 +170,39 @@ public class BrickManager : MonoBehaviour
     private void InitializeAllBricks()
     {
         //This is what goes and randomizes and sets them with powerups
+        //Make an array to gather all children of BlockManager Children Bricks
+        Brick[] allBricks = GetComponentsInChildren<Brick>();
+
+        foreach(Brick brick in allBricks)
+        {
+            //Roll the Health Tier(1 - 3)
+            int tier = Random.Range(1, 4);
+
+            //Make a points, then switch with tier
+            int points = 0;
+            switch(tier)
+            {
+                case 3: points = 50; break;
+                case 2: points = 25; break;
+                case 1: points = 5; break;
+            }
+            //Random roll on a check for power ups
+            bool isPowerUp = false;
+            //If decider > 14; is powerUp
+            int decider = Random.Range(1, 16);
+            if(decider >= 14)
+            {
+                isPowerUp = true;
+            }
+            //If there is isPowerUp
+            GameObject selectedPowerUp = null;
+            if(isPowerUp && powerUpObjects.Length > 0)
+            {
+                int pChoice = Random.Range(0, powerUpObjects.Length);
+                selectedPowerUp = powerUpObjects[pChoice];
+            }
+            brick.InitializeBrick(tier, points, isPowerUp, selectedPowerUp);
+        }
     }
     //Prebuilts
 }
