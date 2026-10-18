@@ -76,6 +76,7 @@ public class BallController : MonoBehaviour
         //Drop the ball from input, and flip the bool;
         if(!isBallDrop)
         {
+                //Check if pressed, and body type
                 if(balldrop.IsPressed() && rb.bodyType == RigidbodyType2D.Static)
                 {
                     rb.bodyType = RigidbodyType2D.Dynamic;

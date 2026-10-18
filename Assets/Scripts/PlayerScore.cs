@@ -1,3 +1,7 @@
+//Name: David Sargent
+//Date: 10-17-2026
+//Desc: Manages Player's score, and references for the system to use.
+//Attach: MainLevel.GameManager
 using TMPro;
 using UnityEngine;
 

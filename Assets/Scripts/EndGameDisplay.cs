@@ -1,3 +1,7 @@
+//Name: David Sargent
+//Date: 10-17-2026
+//Desc: For EndState to present the highest score, and score that round
+//Attach: EndGame
 using TMPro;
 using UnityEngine;
 
@@ -13,11 +17,5 @@ public class EndGameDisplay : MonoBehaviour
         scoreGUI.text = "Your Score is: " + score.ToString();
         int highScore = PlayerPrefs.GetInt("Highscore", 0);
         highScoreGUI.text = "Highest Score was: " + highScore.ToString();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

@@ -83,7 +83,7 @@ public class Brick : MonoBehaviour
     }
     private void ColorAdjust()
     {
-        //STRICTLY SETS COLOR ON COLLISION SO < 3;
+        //STRICTLY SETS COLOR ON COLLISION AT < 3;
         if(currentHealth == 2)
         {
             colorShifter.color = new Color32(17, 19, 113, 255);

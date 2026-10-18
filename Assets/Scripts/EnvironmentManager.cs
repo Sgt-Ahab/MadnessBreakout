@@ -1,3 +1,7 @@
+//Name: David Sargent
+//Date: 10-17-2026
+//Desc: Randomizes the Background images, and audio track, and assembles the environment for next levels
+//Attach: MainLevel.GameManager
 using UnityEngine;
 
 //Manages the random tracks + backgrounds for MainLevel Scene

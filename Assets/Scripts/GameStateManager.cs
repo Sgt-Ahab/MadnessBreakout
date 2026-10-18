@@ -88,7 +88,7 @@ public class GameStateManager : MonoBehaviour
     public void gameOver()
     {
         //Run to make "Highscore" have an integer, else getScore for the final;
-        PlayerPrefs.SetInt("CurrentScore", playerScore.getScore());
+        PlayerPrefs.SetInt("Currentscore", playerScore.getScore());
         showScore();
 
         Time.timeScale = 1f;

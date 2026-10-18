@@ -7,10 +7,8 @@
 //Use .transform.childCount for gathering prefab counts
 //KISS it out by using three prefab points, then grid beneath
 //Have the repeats be a separate list, remove when using so levels truly progress, then once clear recycle the list
-using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.ShaderGraph.Internal;
 
 public class BrickManager : MonoBehaviour
 {
@@ -200,6 +198,7 @@ public class BrickManager : MonoBehaviour
     }
     public bool BlocksRemain()
     {
+        //Bool check on if blocks remain, if remain, true, else false
         if(totalBlockCount > 0)
         {
             return true;
@@ -211,6 +210,7 @@ public class BrickManager : MonoBehaviour
     }
     public void AssembleNewLevel()
     {
+        //Helper Function for assembling new Level
         SpawnBricks();
         InitializeAllBricks();
     }

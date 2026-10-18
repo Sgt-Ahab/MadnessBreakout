@@ -1,3 +1,7 @@
+//Name: David Sargent
+//Date: 10-17-2026
+//Desc: Presents menus attached to it for Handing over scenes between the build
+//Attach: All Scenes GUIButtonHandler/GameManager
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public class MenuManager : MonoBehaviour

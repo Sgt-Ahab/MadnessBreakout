@@ -1,3 +1,7 @@
+//Name: David Sargent
+//Date: 10-17-2026
+//Desc: Enumeration of each powerup for the paddle to reference on collision.
+//Attach: None, public reference for MainLevel.Paddle
 using UnityEngine;
 
 public class PowerUp : MonoBehaviour
