@@ -3,6 +3,7 @@
 //Desc: Brick properties for the GameStateManager to reference
 //Attach: BaseBrick prefab
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Brick : MonoBehaviour
@@ -10,11 +11,13 @@ public class Brick : MonoBehaviour
     //Variables
     private int hitsToBreak;
     private int currentHealth;
-    private int points;
     private SpriteRenderer colorShifter;
     private bool isPowerUp;
+    private float lastHitTime = 0f;
     [SerializeField]
     private GameObject powerUpPrefab;
+    [SerializeField]
+    private BrickManager BrickConductor;
     //Set the Sprite Renderer Pre-Start with Awake()
     private void Awake()
     {
@@ -50,17 +53,14 @@ public class Brick : MonoBehaviour
         if(hitsToBreak == 3)
         {
             currentHealth = 3;
-            points = 50;
         }
         else if(hitsToBreak == 2)
         {
             currentHealth = 2;
-            points = 25;
         }
         else if(hitsToBreak == 1)
         {
             currentHealth = 1;
-            points = 5;
         }
     }
     private void dropPowerUp()
@@ -93,13 +93,12 @@ public class Brick : MonoBehaviour
             colorShifter.color = new Color32(16, 125, 120, 255);
         }
     }
-    public void InitializeBrick(int health, int pointValue, bool isPower, GameObject powerPrefab)
+    public void InitializeBrick(int tier, bool isPower, GameObject powerPrefab)
     {
         //GameStateManager function for direct usage to have its block be called and made into
         //the random algorithm array
-        hitsToBreak = health;
-        currentHealth = health;
-        points = pointValue;
+        hitsToBreak = tier;
+        currentHealth = tier;
         isPowerUp = isPower;
         powerUpPrefab = powerPrefab;
 
@@ -111,24 +110,48 @@ public class Brick : MonoBehaviour
         ColorSet();
 
     }
-    //Prefabs
-    private void OnCollisionEnter2D(Collision2D collision)
+    public int takeDamage()
     {
-        if(collision.gameObject.CompareTag("Ball"))
+        //Dynamically call the brick to return points per hitsToBreak
+        //Debounce to breathe between collisions, double colliding was happening
+        if(Time.time - lastHitTime < 0.1f)
         {
-            currentHealth--;
-            if(currentHealth >= 1)
+            return 0;
+        }
+        //Stamp new time
+        lastHitTime = Time.time;
+
+        int points = 0;
+        currentHealth--;
+        if (currentHealth > 0)
+        {
+            //Health remains, 1
+            ColorAdjust();
+            return 0;
+        }
+        else
+        {
+            //Ball has broken the block, reward points and drop powerup
+            
+            switch (hitsToBreak)
             {
-                //Health remains, 1+
-                ColorAdjust();
+                case 3:
+                    points = 100;
+                    break;
+                case 2:
+                    points = 50;
+                    break;
+                case 1:
+                    points = 25;
+                    break;
+
             }
-            else
-            {
-                //Ball has broken the block, reward points and drop powerup
-                dropPowerUp();
-                //GameStateManager.Instance.AddScore()
-                Destroy(this.gameObject);
-            }
+            dropPowerUp();
+            //Grab the BrickManager's total brick count via FindAnyObjectByType<>.totalBrickCount
+            FindAnyObjectByType<BrickManager>().totalBlockCount--;
+            Destroy(this.gameObject);
+            return points;
         }
     }
+
 }

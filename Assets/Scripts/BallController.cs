@@ -17,27 +17,46 @@ public class BallController : MonoBehaviour
     //Store the Ball of reference for recalling/recreating
     public GameObject ball;
     //Spawn Location
-    public GameObject ballSpawnPOS;
-    public Vector2 spawnPoint;
+    private Transform paddleTransform;
     public InputAction balldrop;
     private bool isBallDrop = false;
+    //Time buffer to prevent double-call
+    private bool isDead = false;
     private Rigidbody2D rb;
+    private PlayerScore player;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        spawnPoint = ballSpawnPOS.transform.position;
-        balldrop.Enable();
-        this.gameObject.transform.position = spawnPoint;
+        //Ball Clones receiving this as well, bool check clone state, make else dynamic
         rb = GetComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Static;
-        //Velocity is set to (0,0)
-        velocity = Vector2.zero;
+        player = FindAnyObjectByType<PlayerScore>();
+
+        //Main-Ball Only snaps to paddle
+        if(!isClone)
+        {
+            paddleTransform = GameObject.FindGameObjectWithTag("Paddle").transform;
+            balldrop.Enable();
+            rb.bodyType = RigidbodyType2D.Static;
+            //Velocity is set to (0,0)
+            velocity = Vector2.zero;
+        }
+        else
+        {
+            //Release the Clones!
+            rb.bodyType = RigidbodyType2D.Dynamic;
+        }
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(rb.bodyType == RigidbodyType2D.Static)
+        {
+            this.gameObject.transform.position = new Vector2(paddleTransform.position.x, paddleTransform.position.y + 1.5f);
+        }
         dropBall();
+        PreventStall();
     }
     //Self-Mades
     private void incrementSpeed()
@@ -59,7 +78,8 @@ public class BallController : MonoBehaviour
         {
                 if(balldrop.IsPressed() && rb.bodyType == RigidbodyType2D.Static)
                 {
-                    rb.bodyType = RigidbodyType2D.Dynamic;            
+                    rb.bodyType = RigidbodyType2D.Dynamic;
+                    isDead = false;
                     velocity = new Vector2(0f, -1f) * ballSpeed;
                     rb.linearVelocity = velocity;
                     isBallDrop = false;
@@ -67,23 +87,59 @@ public class BallController : MonoBehaviour
                 }
         }
     }
+    private void PreventStall()
+    {
+        //Helper Function to prevent the ball stall
+        if(rb.bodyType == RigidbodyType2D.Dynamic)
+        {
+            //Check if less than 0.2f
+            if(Mathf.Abs(rb.linearVelocity.y) < 0.2f)
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, -1f);
+            }
+        }
+    }
+    public void PrepNextLevel()
+    {
+        //Helper function to reset the ball
+        if(isClone)
+        {
+            //No new balls in the next level
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            rb.bodyType = RigidbodyType2D.Static;
+            isBallDrop = false;
+            //Leave the ballspeed, good luck players
+        }
+    }
     //PreBuilts
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.CompareTag("End"))
         {
+            //Time maybe askewed from moving the object, just turn off collider
+            if(isDead)
+            {
+                return;
+            }
+
             //the GameManager can keep count of balls, and if balls are 0, deduct a life
             if(ballEnabled && isClone)
             {
+                ballEnabled = false;
                 Destroy(this.gameObject);
             }
             else
             {
-                this.gameObject.transform.position = spawnPoint;
+                isDead = true;
+                //Reduce a life as well
+                FindAnyObjectByType<GameStateManager>().TakeLife();
+                //Use the bodyType to snap the spawn back above the paddle
                 rb.bodyType = RigidbodyType2D.Static;
                 isBallDrop = false;
                 ballSpeed = 3;
-                //Reduce a life as well
             }
         }
         //Paddle Logic
@@ -101,6 +157,21 @@ public class BallController : MonoBehaviour
             //Normalize the data with .normalized    
             //New Velocity is our Vector2 * ballSpeed
             rb.linearVelocity = newAngle * ballSpeed;
+        }
+        //Add negative Y bias to ball to prevent horizontal ball-stalls
+        else if(collision.gameObject.CompareTag("Brick"))
+        {
+            Brick hitBrick = collision.gameObject.GetComponent<Brick>();
+            if(hitBrick != null)
+            {
+                //Debug.Log("Brick is found and points added");
+                player.incrementScore(hitBrick.takeDamage());
+            }
+            //Inverting the Y caused X to stay the same, thus consuming the bricks...
+            //Vector2 inverseSpeed = rb.linearVelocity;
+            //float inverseY = inverseSpeed.y * -1;
+            //inverseSpeed.y = inverseY;
+            //rb.linearVelocity = inverseSpeed;
         }
     }
 }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7189895819892779514}
   - component: {fileID: 1350039272366757385}
   - component: {fileID: 6955593524799674150}
+  - component: {fileID: 7741698310657043754}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Ball
@@ -28,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 1204440859174666122}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.2967, y: 1.1990998, z: 0}
-  m_LocalScale: {x: 0.2961, y: 0.2961, z: 0.2961}
+  m_LocalPosition: {x: -0.6382, y: 0.8182, z: 0}
+  m_LocalScale: {x: 0.09579018, y: 0.089082524, z: 0.2961}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -83,8 +84,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: b71583fbc8715564cbf9697a686452f0, type: 3}
-  m_Color: {r: 0.6226415, g: 0.10279457, b: 0.10279457, a: 1}
+  m_Sprite: {fileID: 6949250495524209661, guid: 626c17b4db642a543b0985b4ee496ad1, type: 3}
+  m_Color: {r: 0.7686275, g: 0.7686275, b: 0.7686275, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -128,8 +129,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Offset: {x: -0.022427935, y: 0.05606903}
+  m_Radius: 1.6867442
 --- !u!50 &6955593524799674150
 Rigidbody2D:
   serializedVersion: 5
@@ -138,14 +139,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1204440859174666122}
-  m_BodyType: 2
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 5340833e34c39094ba324f3f12051127, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -155,5 +156,41 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &7741698310657043754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204440859174666122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e758f0d4260d89d438da725bb9c2f3b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BallController
+  ballSpeed: 3
+  ballEnabled: 1
+  isClone: 0
+  ball: {fileID: 1204440859174666122}
+  ballSpawnPOS: {fileID: 0}
+  spawnPoint: {x: 0, y: 0}
+  balldrop:
+    m_Name: Balldrop
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 07bb40f2-bf95-4a6e-9a01-fdb4d0dad8a0
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 40d34f8b-20af-4203-b316-f65338bde64b
+      m_Path: <Keyboard>/space
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Balldrop
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0

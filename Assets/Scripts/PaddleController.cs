@@ -18,19 +18,25 @@ public class PaddleController : MonoBehaviour
     [SerializeField]
     private float BallForce;
     [SerializeField]
-    private float paddleSize;
+    private Vector3 paddleSize;
+    private bool isSmall;
+    private float SmallTimer = 0f;
     public InputAction paddleMove;
     //Two bools for checking wall side
     private bool touchLeftWall;
     private bool touchRightWall;
+    public GameObject ballPrefab;
+    private GameStateManager GameBrain;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        //Get the GameStateManager to root powerups and clones under it's transform
+        GameBrain = FindAnyObjectByType<GameStateManager>();
         //Set RB variable
         paddle_rb = GetComponent<Rigidbody2D>();
         //Get the X value size of the paddle for small paddle collision 
-        paddleSize = this.gameObject.transform.localScale.x;
+        paddleSize = transform.localScale;
         paddleMove.Enable();
         
     }
@@ -39,22 +45,34 @@ public class PaddleController : MonoBehaviour
     void Update()
     {
         movePaddle();
+        if (isSmall)
+        {
+            SmallTimer -= Time.deltaTime;
+            if(SmallTimer <= 0f)
+            {
+                //Return back to normal size
+                isSmall = false;
+                transform.localScale = paddleSize;
+            }
+        }
     }
     //Helpers
     private void movePaddle()
     {
+        //Adjust for position to be post checks and stop the paddle.
         Vector2 move = paddleMove.ReadValue<Vector2>();
-        Vector2 position = (Vector2)transform.position + move * ShuffleSpeed * Time.deltaTime;
         //Check if we are touching the wall, and inputting
         if(touchLeftWall && move.x < 0)
         {
             move.x = 0;
         }
         //Using CPP with dual ifs 
-        if(touchRightWall && move.y < 0)
+        if(touchRightWall && move.x > 0)
         {
-            move.y = 0;
-        }    
+            move.x = 0;
+        }
+        Vector2 position = (Vector2)transform.position + move * ShuffleSpeed * Time.deltaTime;
+
         transform.position = position;
     }
     //Prebuilts
@@ -80,6 +98,45 @@ public class PaddleController : MonoBehaviour
         {
             touchLeftWall = false;
             touchRightWall= false;
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //Check what powerup hits the paddle
+        PowerUp collidingPower = collision.GetComponent<PowerUp>();
+        if (collidingPower != null)
+        {
+            //Double collisions, turn off the collider
+            collision.enabled = false;
+            switch (collidingPower.type)
+            {
+                case PowerUp.PowerUpType.ExtraLife:
+                    //Object Name is ExtraLife
+                    GameBrain.AddLife();
+                    break;
+                case PowerUp.PowerUpType.ThreeBalls:
+                    //3Ball sends the balls upwards from where grabbed
+                    Vector2 spawnPOS = collision.transform.position;
+                    for(int i = 0; i < 3; i++)
+                    {
+                        float xOffset = (1 * i) + 1;
+                        GameObject ballClone = Instantiate(ballPrefab, spawnPOS, Quaternion.identity, GameBrain.transform);
+                        ballClone.GetComponent<BallController>().isClone = true;
+                        Rigidbody2D ballCloneRB = ballClone.GetComponent<Rigidbody2D>();
+                        ballCloneRB.linearVelocity = new Vector2(xOffset, 5f);
+                        ballCloneRB.bodyType = RigidbodyType2D.Dynamic;
+                        
+                    }
+                    break;
+                case PowerUp.PowerUpType.SmallPaddle:
+                    isSmall = true;
+                    SmallTimer = 10f;
+                    transform.localScale = new Vector3(paddleSize.x * 0.75f, paddleSize.y, paddleSize.z);
+                    break;
+
+
+            }
+            Destroy(collision.gameObject);
         }
     }
 }

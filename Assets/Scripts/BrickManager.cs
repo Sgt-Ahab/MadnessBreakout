@@ -51,6 +51,7 @@ public class BrickManager : MonoBehaviour
     //This parses the bricks, for the GameManager to view
     public int totalBlockCount;
     //Awake gets before start, so we can gather our brickSize, and brickPadding
+    private PlayerScore playerScore;
     private void Awake()
     {
         repeatLedger = new List<GameObject>();
@@ -78,6 +79,7 @@ public class BrickManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        playerScore = GetComponent<PlayerScore>();
         SpawnBricks();
         InitializeAllBricks();
     }
@@ -178,14 +180,6 @@ public class BrickManager : MonoBehaviour
             //Roll the Health Tier(1 - 3)
             int tier = Random.Range(1, 4);
 
-            //Make a points, then switch with tier
-            int points = 0;
-            switch(tier)
-            {
-                case 3: points = 50; break;
-                case 2: points = 25; break;
-                case 1: points = 5; break;
-            }
             //Random roll on a check for power ups
             bool isPowerUp = false;
             //If decider > 14; is powerUp
@@ -201,8 +195,23 @@ public class BrickManager : MonoBehaviour
                 int pChoice = Random.Range(0, powerUpObjects.Length);
                 selectedPowerUp = powerUpObjects[pChoice];
             }
-            brick.InitializeBrick(tier, points, isPowerUp, selectedPowerUp);
+            brick.InitializeBrick(tier, isPowerUp, selectedPowerUp);
         }
     }
-    //Prebuilts
+    public bool BlocksRemain()
+    {
+        if(totalBlockCount > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public void AssembleNewLevel()
+    {
+        SpawnBricks();
+        InitializeAllBricks();
+    }
 }
