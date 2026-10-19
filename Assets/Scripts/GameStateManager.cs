@@ -40,10 +40,16 @@ public class GameStateManager : MonoBehaviour
             Brick[] allBrick = FindObjectsByType<Brick>();
             foreach (Brick b in allBrick)
             {
+                
                 Destroy(b.gameObject);
             }
             //Force the LevelBuild Threshold to trigger
             brickManager.totalBlockCount = 0;
+            GameObject[] spawns = GameObject.FindGameObjectsWithTag("Bunker");
+            foreach(GameObject sp in spawns)
+            {
+                Destroy(sp);
+            }
         }
         if (maxLives > 0)
         {

@@ -178,11 +178,12 @@ public class BrickManager : MonoBehaviour
             //Roll the Health Tier(1 - 3)
             int tier = Random.Range(1, 4);
 
-            //Random roll on a check for power ups
+            //Random roll on a check for power ups -- toggle easyPower for debug
+            bool easyPower = false;
             bool isPowerUp = false;
             //If decider > 14; is powerUp
             int decider = Random.Range(1, 16);
-            if(decider >= 14)
+            if(decider >= 14 || easyPower)
             {
                 isPowerUp = true;
             }

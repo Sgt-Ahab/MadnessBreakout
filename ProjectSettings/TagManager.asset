@@ -10,6 +10,7 @@ TagManager:
   - PowerUp
   - Ball
   - End
+  - Bunker
   layers:
   - Default
   - TransparentFX
